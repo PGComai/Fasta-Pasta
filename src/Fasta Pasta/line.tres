@@ -1,0 +1,101 @@
+[gd_resource type="VisualShader" load_steps=10 format=3 uid="uid://cdoix3shx1b8p"]
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_txvag"]
+input_name = "vertex"
+
+[sub_resource type="VisualShaderNodeVectorDecompose" id="VisualShaderNodeVectorDecompose_a5p8a"]
+
+[sub_resource type="VisualShaderNodeRemap" id="VisualShaderNodeRemap_f3khr"]
+default_input_values = [1, 25.0, 2, 100.0, 3, 0.0, 4, 1.0]
+
+[sub_resource type="Curve" id="Curve_gjsb4"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_svvbf"]
+curve = SubResource("Curve_gjsb4")
+
+[sub_resource type="VisualShaderNodeCurveTexture" id="VisualShaderNodeCurveTexture_lev08"]
+size = Vector2(492.403, 0)
+texture = SubResource("CurveTexture_svvbf")
+
+[sub_resource type="VisualShaderNodeMix" id="VisualShaderNodeMix_hw3fb"]
+default_input_values = [0, Quaternion(0, 0, 0, 0), 1, Quaternion(1, 1, 1, 1), 2, 0.5]
+op_type = 6
+
+[sub_resource type="VisualShaderNodeColorConstant" id="VisualShaderNodeColorConstant_dlyc6"]
+
+[sub_resource type="VisualShaderNodeColorConstant" id="VisualShaderNodeColorConstant_f5ngb"]
+constant = Color(3.08037e-06, 0.984001, 0.468152, 1)
+
+[resource]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx, unshaded;
+
+uniform sampler2D curve_vtx_5 : repeat_disable;
+
+
+
+void vertex() {
+// ColorConstant:7
+	vec4 n_out7p0 = vec4(1.000000, 1.000000, 1.000000, 1.000000);
+
+
+// ColorConstant:8
+	vec4 n_out8p0 = vec4(0.000003, 0.984001, 0.468152, 1.000000);
+
+
+// Input:2
+	vec3 n_out2p0 = VERTEX;
+
+
+// VectorDecompose:3
+	float n_out3p0 = n_out2p0.x;
+	float n_out3p1 = n_out2p0.y;
+	float n_out3p2 = n_out2p0.z;
+
+
+	float n_out4p0;
+// Remap:4
+	float n_in4p1 = 25.00000;
+	float n_in4p2 = 100.00000;
+	float n_in4p3 = 0.00000;
+	float n_in4p4 = 1.00000;
+	{
+		float __input_range = n_in4p2 - n_in4p1;
+		float __output_range = n_in4p4 - n_in4p3;
+		n_out4p0 = n_in4p3 + __output_range * ((n_out3p1 - n_in4p1) / __input_range);
+	}
+
+
+// CurveTexture:5
+	float n_out5p0 = texture(curve_vtx_5, vec2(n_out4p0)).r;
+
+
+// Mix:6
+	vec4 n_out6p0 = mix(n_out7p0, n_out8p0, n_out5p0);
+
+
+// Output:0
+	COLOR.rgb = vec3(n_out6p0.xyz);
+
+
+}
+"
+flags/unshaded = true
+nodes/vertex/0/position = Vector2(1680, 340)
+nodes/vertex/2/node = SubResource("VisualShaderNodeInput_txvag")
+nodes/vertex/2/position = Vector2(-920, 20)
+nodes/vertex/3/node = SubResource("VisualShaderNodeVectorDecompose_a5p8a")
+nodes/vertex/3/position = Vector2(-340, 160)
+nodes/vertex/4/node = SubResource("VisualShaderNodeRemap_f3khr")
+nodes/vertex/4/position = Vector2(80, 380)
+nodes/vertex/5/node = SubResource("VisualShaderNodeCurveTexture_lev08")
+nodes/vertex/5/position = Vector2(480, 600)
+nodes/vertex/6/node = SubResource("VisualShaderNodeMix_hw3fb")
+nodes/vertex/6/position = Vector2(1240, 260)
+nodes/vertex/7/node = SubResource("VisualShaderNodeColorConstant_dlyc6")
+nodes/vertex/7/position = Vector2(800, 20)
+nodes/vertex/8/node = SubResource("VisualShaderNodeColorConstant_f5ngb")
+nodes/vertex/8/position = Vector2(800, 240)
+nodes/vertex/connections = PackedInt32Array(2, 0, 3, 0, 3, 1, 4, 0, 4, 0, 5, 0, 5, 0, 6, 2, 7, 0, 6, 0, 8, 0, 6, 1, 6, 0, 0, 6)

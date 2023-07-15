@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bvft3kxdyw2nu"
+path="res://.godot/imported/fasta_comp_reduce.glsl-255d308dc2dc1671caade1476f60e7da.res"
+
+[deps]
+
+source_file="res://fasta_comp_reduce.glsl"
+dest_files=["res://.godot/imported/fasta_comp_reduce.glsl-255d308dc2dc1671caade1476f60e7da.res"]
+
+[params]
+

@@ -1,0 +1,80 @@
+[gd_scene load_steps=13 format=3 uid="uid://bn35fnlt720j7"]
+
+[ext_resource type="Script" path="res://SubViewport1.gd" id="1_67udw"]
+[ext_resource type="Script" path="res://line.gd" id="2_sli4c"]
+[ext_resource type="Script" path="res://25.gd" id="3_q5bh5"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a3d6j"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = true
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_sui0p"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_oa4uq"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_o24gn"]
+sky_material = SubResource("ProceduralSkyMaterial_oa4uq")
+
+[sub_resource type="Environment" id="Environment_sm60y"]
+background_mode = 1
+sky = SubResource("Sky_o24gn")
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r23nq"]
+shading_mode = 0
+albedo_color = Color(0.427451, 0.427451, 0.427451, 1)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_lc8jo"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nbff3"]
+shading_mode = 0
+albedo_color = Color(0.0980392, 0.0980392, 0.0980392, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_jtuww"]
+size = Vector2(10000, 100)
+center_offset = Vector3(0, -100, 0)
+
+[node name="SubViewportContainer" type="SubViewportContainer"]
+size_flags_horizontal = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="."]
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(2, 2)
+render_target_update_mode = 4
+script = ExtResource("1_67udw")
+
+[node name="Node3D" type="Node3D" parent="SubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 342.35)
+cull_mask = 1048573
+projection = 1
+size = 300.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -100, 0)
+material_overlay = SubResource("StandardMaterial3D_a3d6j")
+cast_shadow = 0
+mesh = SubResource("ArrayMesh_sui0p")
+script = ExtResource("2_sli4c")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewport/Node3D"]
+environment = SubResource("Environment_sm60y")
+
+[node name="YScale" type="MeshInstance3D" parent="SubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.87563)
+material_overlay = SubResource("StandardMaterial3D_r23nq")
+mesh = SubResource("ArrayMesh_lc8jo")
+script = ExtResource("3_q5bh5")
+
+[node name="Below25" type="MeshInstance3D" parent="SubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14.8143)
+material_overlay = SubResource("StandardMaterial3D_nbff3")
+mesh = SubResource("QuadMesh_jtuww")
+
+[connection signal="size_changed" from="SubViewport" to="SubViewport" method="_on_size_changed"]

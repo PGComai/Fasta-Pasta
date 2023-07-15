@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dwh0wxx4pbn42"
+path="res://.godot/imported/find_nearest.glsl-ec0a599ed52fadf76ca23eb86a685d07.res"
+
+[deps]
+
+source_file="res://find_nearest.glsl"
+dest_files=["res://.godot/imported/find_nearest.glsl-ec0a599ed52fadf76ca23eb86a685d07.res"]
+
+[params]
+

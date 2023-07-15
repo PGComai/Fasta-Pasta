@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://daccmrq05rh4s"
+path="res://.godot/imported/fasta_comp_binary.glsl-bd59149a1ffc903166b4659d5c00611e.res"
+
+[deps]
+
+source_file="res://fasta_comp_binary.glsl"
+dest_files=["res://.godot/imported/fasta_comp_binary.glsl-bd59149a1ffc903166b4659d5c00611e.res"]
+
+[params]
+
