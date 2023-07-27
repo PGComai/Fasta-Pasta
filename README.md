@@ -7,8 +7,18 @@ This is a graphical tool for analyzing short repeats in DNA sequences.
 ## Features
 
 - View single or multiple sections of FASTA file
-- Pick any 100-length section and get near-instant match results from 0% to 100%
-- Manually enter any 100-length sequence
+- Pick any 100-length sample and get near-instant match results from 0% to 100%
+- Manually enter any 100-length sample
+
+## How to Use
+
+1. Enter the path to your FASTA file in the top left, then press "Load" and let sit
+2. When the sections of the file show up along the left, select one or more (Shift-Click or Ctrl-Click) sequences and click "Analyze"
+3. You will probably need to resize the window now
+4. Each loaded section is given a window which has a zoom slider to the right and a pan slider below
+5. The window at the bottom is a map of the focused sequence. To change focus, click the check box at the top left of any sequence viewer window
+6. Below the map is the manual sample entry box, as well as a slider that controls the location within the sequence that is being sampled. The use of these two is mutually exclusive
+7. To analyze different sections, make your new selection and click "Analyze" again. The sample last used will remain in use until you select a new one
 
 ## Current Issues/Limitations
 
