@@ -35,6 +35,9 @@ This is a graphical tool for analyzing short repeats in DNA sequences.
 - Selectable short repeat length options (1000, 100, 50, 25)
 - Export analysis results
 - Accessibility features such as displaying the results as audio
+- Low memory mode
+- Sequence caching to save load times
+- Cute loading animation and app icon
 
  
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y0NJZLS)
