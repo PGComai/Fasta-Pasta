@@ -28,6 +28,7 @@ This is a graphical tool for analyzing short repeats in DNA sequences.
 - Cannot analyze sequences larger than 152,087,500 bases
 - Viewing multiple sequences at once requires lots of vertical screen space
 - Uses lots of memory
+- MacOS version is unsigned so Gatekeeper will block the opening of the app, you will have to go into settings to override it
 
 ## Future Plans
 
