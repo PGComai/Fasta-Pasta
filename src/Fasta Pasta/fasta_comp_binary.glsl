@@ -16,6 +16,10 @@ layout(set = 0, binding = 2, std430) restrict buffer MyParamBuffer {
 	int data[];
 }
 my_param_buffer;
+layout(set = 0, binding = 3, std430) restrict buffer MySampleBuffer {
+	int data[];
+}
+my_sample_buffer;
 
 int compare(int c1, int c2) {
 	return int(c1 == c2);
@@ -26,7 +30,8 @@ void main() {
 	uint location = ((gl_WorkGroupID.x * gl_NumWorkGroups.x * gl_NumWorkGroups.x) + (gl_WorkGroupID.y * gl_NumWorkGroups.x) + (gl_WorkGroupID.z));
 	uint big_location = location * 100;
 	uint sub_location = big_location + gl_LocalInvocationIndex;
-	int comparison_result = compare(int(my_data_buffer.data[sub_location]), int(my_data_buffer.data[uint(my_param_buffer.data[0] * 100) + gl_LocalInvocationIndex]));
+	int comparison_result = compare(int(my_data_buffer.data[sub_location]), int(my_sample_buffer.data[gl_LocalInvocationIndex]));
+//	int comparison_result = compare(int(my_data_buffer.data[sub_location]), int(my_data_buffer.data[uint(my_param_buffer.data[0] * 100) + gl_LocalInvocationIndex]));
 	
 //	memoryBarrierShared();
 //    barrier();

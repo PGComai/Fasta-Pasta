@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://b8rkoohnpjjl2"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GreatMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VerticalSections" type="HBoxContainer" parent="GreatMargin"]
+layout_mode = 2
+
+[node name="FilePanel" type="PanelContainer" parent="GreatMargin/VerticalSections"]
+layout_mode = 2
+
+[node name="FileImport" type="VBoxContainer" parent="GreatMargin/VerticalSections/FilePanel"]
+layout_mode = 2
+
+[node name="FileLineAndButton" type="HBoxContainer" parent="GreatMargin/VerticalSections/FilePanel/FileImport"]
+layout_mode = 2
+
+[node name="FastaPath" type="LineEdit" parent="GreatMargin/VerticalSections/FilePanel/FileImport/FileLineAndButton"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="FastaLoad" type="Button" parent="GreatMargin/VerticalSections/FilePanel/FileImport/FileLineAndButton"]
+layout_mode = 2
+text = "Load"
+
+[node name="FastaBreakdown" type="ItemList" parent="GreatMargin/VerticalSections/FilePanel/FileImport"]
+layout_mode = 2
+
+[node name="ViewPanel" type="PanelContainer" parent="GreatMargin/VerticalSections"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GreatMargin/VerticalSections/ViewPanel"]
+layout_mode = 2
+
+[node name="AnalysisPanel" type="PanelContainer" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MapPanel" type="PanelContainer" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer/MapPanel"]
+layout_mode = 2
+
+[node name="SubViewportMap" type="SubViewportContainer" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer/MapPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer/MapPanel/VBoxContainer/SubViewportMap"]
+handle_input_locally = false
+size = Vector2i(1016, 473)
+render_target_update_mode = 4
+
+[node name="Node2D" type="Node2D" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer/MapPanel/VBoxContainer/SubViewportMap/SubViewport"]
+
+[node name="Camera2D" type="Camera2D" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer/MapPanel/VBoxContainer/SubViewportMap/SubViewport/Node2D"]
+anchor_mode = 0
+
+[node name="Line2D" type="Line2D" parent="GreatMargin/VerticalSections/ViewPanel/VBoxContainer/MapPanel/VBoxContainer/SubViewportMap/SubViewport/Node2D"]

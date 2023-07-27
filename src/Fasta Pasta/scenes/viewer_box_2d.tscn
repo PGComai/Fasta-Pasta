@@ -1,0 +1,128 @@
+[gd_scene load_steps=11 format=3 uid="uid://boa2fwpj8xfw3"]
+
+[ext_resource type="Script" path="res://scripts/viewer_module2d.gd" id="1_6ixmr"]
+[ext_resource type="Script" path="res://scripts/ViewerCheckBox.gd" id="2_okp1n"]
+[ext_resource type="Script" path="res://scripts/SequenceIDLabel.gd" id="3_vld0k"]
+[ext_resource type="Script" path="res://scripts/SubViewport1.gd" id="4_vwv13"]
+[ext_resource type="Script" path="res://scripts/FastaLine.gd" id="5_hw25b"]
+[ext_resource type="Script" path="res://scripts/ZoomSlider.gd" id="7_oobu7"]
+[ext_resource type="Script" path="res://scripts/PanSlider.gd" id="8_yc321"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lk4of"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mmovo"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lipju"]
+
+[node name="ViewerModule" type="VBoxContainer" groups=["ViewerModules"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+script = ExtResource("1_6ixmr")
+
+[node name="TitleAndButton" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="TitleAndButton"]
+layout_mode = 2
+script = ExtResource("2_okp1n")
+
+[node name="SequenceIDLabel" type="Label" parent="TitleAndButton"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_styles/normal = SubResource("StyleBoxFlat_lk4of")
+script = ExtResource("3_vld0k")
+
+[node name="Viewer1HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Viewer1HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="Viewer1HBox/SubViewportContainer"]
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(1250, 902)
+render_target_update_mode = 4
+script = ExtResource("4_vwv13")
+
+[node name="Node2D" type="Node2D" parent="Viewer1HBox/SubViewportContainer/SubViewport"]
+
+[node name="Camera2D" type="Camera2D" parent="Viewer1HBox/SubViewportContainer/SubViewport/Node2D"]
+anchor_mode = 0
+
+[node name="FastaLine" type="Line2D" parent="Viewer1HBox/SubViewportContainer/SubViewport/Node2D"]
+script = ExtResource("5_hw25b")
+
+[node name="VSeparator" type="VSeparator" parent="Viewer1HBox"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="ZoomSlider" type="VSlider" parent="Viewer1HBox"]
+visible = false
+layout_mode = 2
+min_value = 1.0
+max_value = 1500.0
+step = 0.1
+value = 1.0
+exp_edit = true
+
+[node name="ZoomScroll" type="VScrollBar" parent="Viewer1HBox"]
+layout_mode = 2
+min_value = -1500.0
+max_value = -1.0
+step = 0.001
+value = -1.0
+custom_step = 0.01
+script = ExtResource("7_oobu7")
+
+[node name="VSeparator2" type="VSeparator" parent="Viewer1HBox"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
+
+[node name="PanSlider" type="HSlider" parent="."]
+visible = false
+layout_mode = 2
+min_value = -100.0
+step = 0.01
+
+[node name="PanScroll" type="HScrollBar" parent="."]
+layout_mode = 2
+min_value = -100.0
+step = 0.001
+custom_step = 0.01
+script = ExtResource("8_yc321")
+
+[node name="HSeparator2" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
+
+[connection signal="check" from="." to="TitleAndButton/CheckBox" method="_on_viewer_module_check"]
+[connection signal="forward_map_clicked" from="." to="PanScroll" method="_on_viewer_module_forward_map_clicked"]
+[connection signal="forward_match_ui" from="." to="Viewer1HBox/ZoomScroll" method="_on_viewer_module_forward_match_ui"]
+[connection signal="forward_match_ui" from="." to="PanScroll" method="_on_viewer_module_forward_match_ui"]
+[connection signal="forward_uncheck" from="." to="TitleAndButton/CheckBox" method="_on_viewer_module_forward_uncheck"]
+[connection signal="foward_line" from="." to="Viewer1HBox/SubViewportContainer/SubViewport/Node2D/FastaLine" method="_on_viewer_module_foward_line"]
+[connection signal="set_label_name" from="." to="TitleAndButton/SequenceIDLabel" method="_on_viewer_module_set_label_name"]
+[connection signal="toggled" from="TitleAndButton/CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="gui_input" from="Viewer1HBox/SubViewportContainer" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_sub_viewport_container_gui_input"]
+[connection signal="size_changed" from="Viewer1HBox/SubViewportContainer/SubViewport" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_size_changed" flags=18]
+[connection signal="value_changed" from="Viewer1HBox/ZoomSlider" to="Viewer1HBox/ZoomSlider" method="_on_value_changed"]
+[connection signal="value_changed" from="Viewer1HBox/ZoomScroll" to="Viewer1HBox/ZoomScroll" method="_on_value_changed"]
+[connection signal="value_changed" from="PanSlider" to="PanSlider" method="_on_value_changed"]
+[connection signal="value_changed" from="PanScroll" to="PanScroll" method="_on_value_changed"]

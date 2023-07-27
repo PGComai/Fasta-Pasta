@@ -33,18 +33,10 @@ layout(set = 1, binding = 2, std430) restrict buffer MyColorBBuffer {
 	float data[];
 }
 my_color_b_buffer;
-//float webby_force(float dist) {
-//	//return clamp(pow(dist, 16.0), 0.0, 10.0);
-//	float force_reversal_dist = 0.2;
-//	return clamp(pow((dist - force_reversal_dist) * 400.0, 1.8), -400.0, 400.0);
-//}
 
 // The code we want to execute in each invocation
 void main() {
 	uint location = ((gl_WorkGroupID.x * gl_NumWorkGroups.x * gl_NumWorkGroups.x) + (gl_WorkGroupID.y * gl_NumWorkGroups.x) + (gl_WorkGroupID.z));
-//	vec3 position = vec3(float(location + 1) / 1000.0, float(my_value_buffer.data[location]) * 2.0, my_position_z_buffer.data[location]);
-	
-//	vec3 newposition = position;
 	
 	my_position_x_buffer.data[location] = float(location + 1) / 1000.0;
 	my_position_y_buffer.data[location] = float(my_value_buffer.data[location]) * 2.0;

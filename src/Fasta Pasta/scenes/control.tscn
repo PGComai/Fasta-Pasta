@@ -1,0 +1,372 @@
+[gd_scene load_steps=33 format=3 uid="uid://xgdh0qugqi3r"]
+
+[ext_resource type="StyleBox" uid="uid://bwylieo811nq5" path="res://styles/hscrollbar.tres" id="1_1d5if"]
+[ext_resource type="StyleBox" uid="uid://bk7htvxwdnlnw" path="res://styles/vscrollbar.tres" id="2_qd4kp"]
+[ext_resource type="Script" path="res://scripts/main.gd" id="3_x6dpf"]
+[ext_resource type="Script" path="res://scripts/ChrList.gd" id="4_7bfkv"]
+[ext_resource type="Script" path="res://scripts/Section.gd" id="5_n7u8o"]
+[ext_resource type="PackedScene" uid="uid://b4t8u3u64xey6" path="res://scenes/viewer_box.tscn" id="6_57auc"]
+[ext_resource type="Script" path="res://scripts/SubViewportMap.gd" id="7_d6sgj"]
+[ext_resource type="Script" path="res://scripts/mapmesh.gd" id="8_6ybeu"]
+[ext_resource type="Script" path="res://scripts/highlight.gd" id="9_ky1k2"]
+[ext_resource type="Script" path="res://scripts/sectionMarker.gd" id="10_3se35"]
+[ext_resource type="Script" path="res://scripts/FocusedStringLabel.gd" id="11_7lvks"]
+[ext_resource type="FontFile" uid="uid://dwrsj6bb1p2xc" path="res://Courier Prime.ttf" id="12_prlo5"]
+[ext_resource type="Script" path="res://scripts/SampleInfoLabel.gd" id="12_u16xr"]
+[ext_resource type="Script" path="res://scripts/SampleEdit.gd" id="13_nhd0j"]
+[ext_resource type="Script" path="res://scripts/SampleLengthLabel.gd" id="14_t5qjj"]
+[ext_resource type="Script" path="res://scripts/SampleChoice.gd" id="15_yxgcr"]
+[ext_resource type="Script" path="res://scripts/TailEndLabel.gd" id="16_gvg8i"]
+[ext_resource type="Script" path="res://scripts/SectionSlider.gd" id="17_jvfgq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pbv1l"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mrxgc"]
+
+[sub_resource type="Theme" id="Theme_ol2iq"]
+default_font_size = 24
+HScrollBar/styles/grabber = SubResource("StyleBoxFlat_pbv1l")
+HScrollBar/styles/grabber_highlight = SubResource("StyleBoxFlat_pbv1l")
+HScrollBar/styles/grabber_pressed = SubResource("StyleBoxFlat_pbv1l")
+HScrollBar/styles/scroll = ExtResource("1_1d5if")
+HScrollBar/styles/scroll_focus = ExtResource("1_1d5if")
+HSlider/styles/grabber_area = SubResource("StyleBoxEmpty_mrxgc")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxEmpty_mrxgc")
+VScrollBar/styles/grabber = SubResource("StyleBoxFlat_pbv1l")
+VScrollBar/styles/grabber_highlight = SubResource("StyleBoxFlat_pbv1l")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxFlat_pbv1l")
+VScrollBar/styles/scroll = ExtResource("2_qd4kp")
+VScrollBar/styles/scroll_focus = ExtResource("2_qd4kp")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mmovo"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lipju"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vegh4"]
+
+[sub_resource type="Environment" id="Environment_a4uyk"]
+
+[sub_resource type="World3D" id="World3D_crkn2"]
+environment = SubResource("Environment_a4uyk")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ykt7t"]
+shading_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_q57ro"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vs246"]
+shading_mode = 0
+albedo_color = Color(0.211765, 0.211765, 0.211765, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4nxus"]
+material = SubResource("StandardMaterial3D_vs246")
+size = Vector3(1000, 200, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m5hod"]
+shading_mode = 0
+albedo_color = Color(0.203922, 0.368627, 0.494118, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_0k7xr"]
+material = SubResource("StandardMaterial3D_m5hod")
+size = Vector2(5, 200)
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_ol2iq")
+script = ExtResource("3_x6dpf")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FileVStack" type="VBoxContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="FilePathBox" type="HBoxContainer" parent="HBoxContainer/FileVStack"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="FilePath" type="LineEdit" parent="HBoxContainer/FileVStack/FilePathBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "FASTA file path"
+
+[node name="LoadButton" type="Button" parent="HBoxContainer/FileVStack/FilePathBox"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Load"
+
+[node name="ChrList" type="ItemList" parent="HBoxContainer/FileVStack"]
+layout_mode = 2
+size_flags_vertical = 3
+select_mode = 1
+script = ExtResource("4_7bfkv")
+
+[node name="Section" type="SpinBox" parent="HBoxContainer/FileVStack"]
+visible = false
+layout_mode = 2
+update_on_text_changed = true
+suffix = " / x 100-mers"
+script = ExtResource("5_n7u8o")
+
+[node name="AnalyzeButton" type="Button" parent="HBoxContainer/FileVStack"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Analyze"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ViewerVStack" type="VBoxContainer" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ExtraViewerBox" type="VBoxContainer" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Viewer1VBox" parent="HBoxContainer/MarginContainer/ViewerVStack/ExtraViewerBox" instance=ExtResource("6_57auc")]
+layout_mode = 2
+
+[node name="RangeSelection" type="HBoxContainer" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Range1" type="SpinBox" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+update_on_text_changed = true
+
+[node name="VSeparator3" type="VSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="Label" type="Label" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+text = "to"
+
+[node name="VSeparator4" type="VSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="Range2" type="SpinBox" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+update_on_text_changed = true
+
+[node name="VSeparator5" type="VSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="Button" type="Button" parent="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection"]
+layout_mode = 2
+text = "Go"
+
+[node name="HSeparator5" type="HSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
+
+[node name="FocusedStringLabel" type="Label" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_vegh4")
+script = ExtResource("11_7lvks")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 8
+stretch = true
+
+[node name="MapSubViewport" type="SubViewport" parent="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer"]
+own_world_3d = true
+world_3d = SubResource("World3D_crkn2")
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(956, 300)
+render_target_update_mode = 4
+script = ExtResource("7_d6sgj")
+
+[node name="Node3D" type="Node3D" parent="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport"]
+
+[node name="Camera3D" type="Camera3D" parent="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 261.137)
+keep_aspect = 0
+cull_mask = 1048574
+projection = 1
+size = 1000.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, -50, 0)
+layers = 2
+material_overlay = SubResource("StandardMaterial3D_ykt7t")
+cast_shadow = 0
+mesh = SubResource("ArrayMesh_q57ro")
+skeleton = NodePath("../Camera3D")
+script = ExtResource("8_6ybeu")
+
+[node name="highlight" type="MeshInstance3D" parent="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -20)
+layers = 2
+mesh = SubResource("BoxMesh_4nxus")
+script = ExtResource("9_ky1k2")
+
+[node name="sectionMarker" type="MeshInstance3D" parent="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.1843)
+visible = false
+layers = 2
+mesh = SubResource("QuadMesh_0k7xr")
+script = ExtResource("10_3se35")
+
+[node name="SampleInfoLabel" type="Label" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+script = ExtResource("12_u16xr")
+
+[node name="SampleEditHBox" type="HBoxContainer" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+
+[node name="SampleEdit" type="LineEdit" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleEditHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("12_prlo5")
+placeholder_text = "Sample"
+max_length = 100
+editable = false
+select_all_on_focus = true
+script = ExtResource("13_nhd0j")
+
+[node name="SampleLengthLabel" type="Label" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleEditHBox"]
+layout_mode = 2
+text = "0 / 100"
+script = ExtResource("14_t5qjj")
+
+[node name="HSeparator3" type="HSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
+
+[node name="SampleChoiceBox" type="HBoxContainer" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="SampleChoice" type="SpinBox" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+update_on_text_changed = true
+script = ExtResource("15_yxgcr")
+
+[node name="TailEndLabel" type="Label" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+text = " to 1 x 100"
+script = ExtResource("16_gvg8i")
+
+[node name="VSeparator5" type="VSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="Re-Analyze Button" type="Button" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+text = "Re-Analyze
+"
+
+[node name="VSeparator6" type="VSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
+
+[node name="AutoCheckButton" type="CheckButton" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+tooltip_text = "Run analysis immediately after slider movement."
+button_pressed = true
+text = "Auto"
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+
+[node name="CustomSampleCheck" type="CheckButton" parent="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox"]
+layout_mode = 2
+text = "Custom Sample"
+
+[node name="HSeparator6" type="HSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
+
+[node name="SectionSlider" type="HSlider" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+script = ExtResource("17_jvfgq")
+
+[node name="SampleScroll" type="HScrollBar" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+visible = false
+layout_mode = 2
+
+[node name="HSeparator4" type="HSeparator" parent="HBoxContainer/MarginContainer/ViewerVStack"]
+layout_mode = 2
+theme_override_constants/separation = 5
+theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
+
+[connection signal="add_item" from="." to="HBoxContainer/FileVStack/ChrList" method="_on_control_add_item"]
+[connection signal="display_sample" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SampleEditHBox/SampleEdit" method="_on_control_display_sample"]
+[connection signal="make_line" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D/MeshInstance3D" method="_on_control_make_line"]
+[connection signal="make_map" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D/MeshInstance3D" method="_on_control_make_map"]
+[connection signal="new_focused_string" from="." to="HBoxContainer/MarginContainer/ViewerVStack/FocusedStringLabel" method="_on_control_new_focused_string"]
+[connection signal="new_sample_info" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SampleInfoLabel" method="_on_control_new_sample_info"]
+[connection signal="section_limit" from="." to="HBoxContainer/FileVStack/Section" method="_on_control_section_limit"]
+[connection signal="section_slider_limit" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/SampleChoice" method="_on_control_section_slider_limit"]
+[connection signal="section_slider_limit" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" method="_on_control_section_slider_limit"]
+[connection signal="section_slider_to" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/SampleChoice" method="_on_control_section_slider_to"]
+[connection signal="section_slider_to" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/TailEndLabel" method="_on_control_section_slider_to"]
+[connection signal="section_slider_to" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" method="_on_control_section_slider_to"]
+[connection signal="set_marker" from="." to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D/sectionMarker" method="_on_control_set_marker"]
+[connection signal="uncheck_check_boxes" from="." to="HBoxContainer/MarginContainer/ViewerVStack/FocusedStringLabel" method="_on_control_uncheck_check_boxes"]
+[connection signal="text_changed" from="HBoxContainer/FileVStack/FilePathBox/FilePath" to="." method="_on_file_path_text_changed"]
+[connection signal="text_submitted" from="HBoxContainer/FileVStack/FilePathBox/FilePath" to="." method="_on_file_path_text_submitted"]
+[connection signal="button_up" from="HBoxContainer/FileVStack/FilePathBox/LoadButton" to="." method="_on_load_button_button_up"]
+[connection signal="item_selected" from="HBoxContainer/FileVStack/ChrList" to="." method="_on_chr_list_item_selected"]
+[connection signal="multi_selected" from="HBoxContainer/FileVStack/ChrList" to="HBoxContainer/FileVStack/ChrList" method="_on_multi_selected"]
+[connection signal="value_changed" from="HBoxContainer/FileVStack/Section" to="." method="_on_section_value_changed"]
+[connection signal="button_up" from="HBoxContainer/FileVStack/AnalyzeButton" to="." method="_on_analyze_button_button_up"]
+[connection signal="forward_check_toggle" from="HBoxContainer/MarginContainer/ViewerVStack/ExtraViewerBox/Viewer1VBox" to="." method="_on_vb_forward_check_toggle"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection/Range1" to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D/highlight" method="_on_range_1_value_changed"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/RangeSelection/Range2" to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport/Node3D/highlight" method="_on_range_2_value_changed"]
+[connection signal="gui_input" from="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer" to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport" method="_on_sub_viewport_container_gui_input"]
+[connection signal="size_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport" to="HBoxContainer/MarginContainer/ViewerVStack/SubViewportContainer/MapSubViewport" method="_on_size_changed"]
+[connection signal="text_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SampleEditHBox/SampleEdit" to="HBoxContainer/MarginContainer/ViewerVStack/SampleEditHBox/SampleLengthLabel" method="_on_sample_edit_text_changed"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/SampleChoice" to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/TailEndLabel" method="_on_sample_choice_value_changed"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/SampleChoice" to="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" method="_on_sample_choice_value_changed"]
+[connection signal="button_up" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/Re-Analyze Button" to="." method="_on_re_analyze_button_button_up"]
+[connection signal="toggled" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/AutoCheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/CustomSampleCheck" to="HBoxContainer/MarginContainer/ViewerVStack/SampleEditHBox/SampleEdit" method="_on_custom_sample_check_toggled"]
+[connection signal="toggled" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/CustomSampleCheck" to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/SampleChoice" method="_on_custom_sample_check_toggled"]
+[connection signal="toggled" from="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/CustomSampleCheck" to="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" method="_on_custom_sample_check_toggled"]
+[connection signal="drag_ended" from="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" to="." method="_on_section_slider_drag_ended"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" to="." method="_on_section_slider_value_changed"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/SampleChoice" method="_on_section_slider_value_changed"]
+[connection signal="value_changed" from="HBoxContainer/MarginContainer/ViewerVStack/SectionSlider" to="HBoxContainer/MarginContainer/ViewerVStack/SampleChoiceBox/TailEndLabel" method="_on_section_slider_value_changed"]

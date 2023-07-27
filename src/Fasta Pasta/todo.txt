@@ -1,0 +1,1 @@
+- remap pan slider so 1 tick is 100 bases
