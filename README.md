@@ -1,8 +1,14 @@
 # Fasta Pasta
 
-This is a graphical tool for analyzing short repeats in DNA sequences.
+This is a graphical tool for analyzing short repeats in DNA sequences. It uses a compute shader running on the GPU to quickly look for matches across sequences up to 152 Mbases long.
 
 ![An image showing an example of the user interface](images/fp1.png)
+
+### Recent Changes
+
+- Scroll and pan sliders are larger and easier to grab
+- Panning can now be adjusted in single increments
+- Loading indicator added
 
 ## Features
 
