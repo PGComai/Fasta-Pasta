@@ -35,6 +35,8 @@ var global: Node
 var waiting_for_viewers_to_leave := false
 var waiting_for_new_map := false
 var reference_section: PackedInt32Array
+var queue_read := false
+var queue_frames := 0
 var substring_param := {
 	"Viewing Position" : 0,
 	"Zoom" : 0.0,
@@ -47,6 +49,8 @@ var substring_param := {
 }
 
 var viewer_box := preload("res://scenes/viewer_box.tscn")
+
+@onready var loading = $HBoxContainer/FileVStack/Loading
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -61,16 +65,35 @@ func _process(delta):
 	if waiting_for_new_map and !computing:
 		_map_compute()
 		waiting_for_new_map = false
+	if queue_read:
+		if queue_frames > 3:
+			_read_fasta()
+			queue_read = false
+			queue_frames = 0
+		else:
+			queue_frames += 1
 
 func _on_load_button_button_up():
-	_read_fasta()
+	filepath = filepath.replace('"', '')
+	if FileAccess.file_exists(filepath):
+		loading.visible = true
+		queue_read = true
+	else:
+		print('bad path')
 
 func _on_file_path_text_changed(new_text):
 	filepath = new_text
 	filepath = filepath.replace('\\', '/')
 
 func _on_file_path_text_submitted(new_text):
-	_read_fasta()
+	filepath = new_text
+	filepath = filepath.replace('\\', '/')
+	filepath = filepath.replace('"', '')
+	if FileAccess.file_exists(filepath):
+		loading.visible = true
+		queue_read = true
+	else:
+		print('bad path')
 
 func _read_csv():
 	filepath = filepath.replace('"', '')
@@ -206,32 +229,29 @@ func _read_csv():
 	image.save_png("C:/Users/comai/Documents/arnie-scott stuff/dr_counts.png")
 
 func _read_fasta():
-	filepath = filepath.replace('"', '')
 	print(filepath)
-	if FileAccess.file_exists(filepath):
-		file = FileAccess.open(filepath, FileAccess.READ)
-		filetxt = file.get_as_text()
-		print(len(filetxt))
-		var chrs = filetxt.split('>')
-		print(len(chrs))
-		for chr in chrs:
-			var newsplit = chr.split('\n', true, 1)
-			if len(newsplit) == 1:
-				pass
-			else:
-				var newstr = newsplit[1].strip_escapes()
-				global.chr_dict[newsplit[0]] = Array(newstr.split('')).map(acgt_to_int)
-				global.match_dict[newsplit[0]] = []
-		print(global.chr_dict.keys())
-		var count := 0
-		for chr_k in global.chr_dict.keys():
-			global.all_substrings.append(count)
-			emit_signal('add_item', str(chr_k, ' - ', global.format_score(str(len(global.chr_dict[chr_k]))), ' bases'))
-			global.substring_viewer_saved_parameters[str(chr_k)] = substring_param.duplicate()
-			global.substring_viewer_saved_parameters[str(chr_k)]["Bases"] = len(global.chr_dict[chr_k])
-			count += 1
-	else:
-		print('bad path')
+	file = FileAccess.open(filepath, FileAccess.READ)
+	filetxt = file.get_as_text()
+	print(len(filetxt))
+	var chrs = filetxt.split('>')
+	print(len(chrs))
+	for chr in chrs:
+		var newsplit = chr.split('\n', true, 1)
+		if len(newsplit) == 1:
+			pass
+		else:
+			var newstr = newsplit[1].strip_escapes()
+			global.chr_dict[newsplit[0]] = Array(newstr.split('')).map(acgt_to_int)
+			global.match_dict[newsplit[0]] = []
+	print(global.chr_dict.keys())
+	var count := 0
+	for chr_k in global.chr_dict.keys():
+		global.all_substrings.append(count)
+		emit_signal('add_item', str(chr_k, ' - ', global.format_score(str(len(global.chr_dict[chr_k]))), ' bases'))
+		global.substring_viewer_saved_parameters[str(chr_k)] = substring_param.duplicate()
+		global.substring_viewer_saved_parameters[str(chr_k)]["Bases"] = len(global.chr_dict[chr_k])
+		count += 1
+	loading.visible = false
 
 func _single_binary_compute(id: String, workgroup_size: int, viewer_idx: int, map: bool):
 	var data_array := PackedInt32Array(global.chr_dict[id])

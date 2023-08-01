@@ -18,8 +18,6 @@ var global: Node
 @onready var sequence_id_label = $TitleAndButton/SequenceIDLabel
 @onready var sub_viewport = $Viewer1HBox/SubViewportContainer/SubViewport
 @onready var mesh_instance_3d = $Viewer1HBox/SubViewportContainer/SubViewport/Node3D/MeshInstance3D
-@onready var zoom_scroll = $Viewer1HBox/ZoomScroll
-@onready var pan_scroll = $PanScroll
 
 
 # Called when the node enters the scene tree for the first time.

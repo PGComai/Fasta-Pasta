@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://b4t8u3u64xey6"]
+[gd_scene load_steps=26 format=3 uid="uid://b4t8u3u64xey6"]
 
 [ext_resource type="Script" path="res://scripts/viewer_module.gd" id="1_0gjf0"]
 [ext_resource type="Script" path="res://scripts/ViewerCheckBox.gd" id="2_o3dpx"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://scripts/25.gd" id="6_6lys4"]
 [ext_resource type="Script" path="res://scripts/ZoomSlider.gd" id="7_ly6cb"]
 [ext_resource type="Script" path="res://scripts/PanSlider.gd" id="8_505dv"]
+[ext_resource type="Texture2D" uid="uid://8x3bxdpkmqgh" path="res://textures/left_arrow_32_32.png" id="9_d4c55"]
+[ext_resource type="Texture2D" uid="uid://e66olyo03to" path="res://textures/right_arrow_32_32.png" id="10_d5kmf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lk4of"]
 
@@ -90,7 +92,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="Viewer1HBox/SubViewportContainer"]
 own_world_3d = true
 handle_input_locally = false
-size = Vector2i(1242, 894)
+size = Vector2i(1242, 870)
 render_target_update_mode = 4
 script = ExtResource("4_xiit2")
 
@@ -138,20 +140,11 @@ theme_override_styles/separator = SubResource("StyleBoxEmpty_mmovo")
 [node name="ZoomSlider" type="VSlider" parent="Viewer1HBox"]
 layout_mode = 2
 min_value = 1.0
-max_value = 1500.0
+max_value = 2000.0
 step = 0.1
 value = 1.0
 exp_edit = true
 script = ExtResource("7_ly6cb")
-
-[node name="ZoomScroll" type="VScrollBar" parent="Viewer1HBox"]
-visible = false
-layout_mode = 2
-min_value = -1500.0
-max_value = -1.0
-step = 0.001
-value = -1.0
-custom_step = 0.01
 
 [node name="VSeparator2" type="VSeparator" parent="Viewer1HBox"]
 layout_mode = 2
@@ -163,17 +156,23 @@ layout_mode = 2
 theme_override_constants/separation = 5
 theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
 
-[node name="PanSlider" type="HSlider" parent="."]
+[node name="PanBox" type="HBoxContainer" parent="."]
 layout_mode = 2
+
+[node name="PanStepLeft" type="Button" parent="PanBox"]
+layout_mode = 2
+icon = ExtResource("9_d4c55")
+
+[node name="PanStepRight" type="Button" parent="PanBox"]
+layout_mode = 2
+icon = ExtResource("10_d5kmf")
+
+[node name="PanSlider" type="HSlider" parent="PanBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
 step = 0.001
 script = ExtResource("8_505dv")
-
-[node name="PanScroll" type="HScrollBar" parent="."]
-visible = false
-layout_mode = 2
-min_value = -100.0
-step = 0.001
-custom_step = 0.01
 
 [node name="HSeparator2" type="HSeparator" parent="."]
 layout_mode = 2
@@ -181,16 +180,16 @@ theme_override_constants/separation = 5
 theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
 
 [connection signal="check" from="." to="TitleAndButton/CheckBox" method="_on_viewer_module_check"]
-[connection signal="forward_map_clicked" from="." to="PanSlider" method="_on_viewer_module_forward_map_clicked"]
+[connection signal="forward_map_clicked" from="." to="PanBox/PanSlider" method="_on_viewer_module_forward_map_clicked"]
 [connection signal="forward_match_ui" from="." to="Viewer1HBox/ZoomSlider" method="_on_viewer_module_forward_match_ui"]
-[connection signal="forward_match_ui" from="." to="PanSlider" method="_on_viewer_module_forward_match_ui"]
+[connection signal="forward_match_ui" from="." to="PanBox/PanSlider" method="_on_viewer_module_forward_match_ui"]
 [connection signal="forward_uncheck" from="." to="TitleAndButton/CheckBox" method="_on_viewer_module_forward_uncheck"]
 [connection signal="foward_line" from="." to="Viewer1HBox/SubViewportContainer/SubViewport/Node3D/MeshInstance3D" method="_on_viewer_module_foward_line"]
 [connection signal="toggled" from="TitleAndButton/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="gui_input" from="Viewer1HBox/SubViewportContainer" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_sub_viewport_container_gui_input"]
 [connection signal="size_changed" from="Viewer1HBox/SubViewportContainer/SubViewport" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_size_changed" flags=18]
-[connection signal="set_pan_slider_bounds" from="Viewer1HBox/SubViewportContainer/SubViewport/Node3D/MeshInstance3D" to="PanSlider" method="_on_mesh_instance_3d_set_pan_slider_bounds"]
+[connection signal="set_pan_slider_bounds" from="Viewer1HBox/SubViewportContainer/SubViewport/Node3D/MeshInstance3D" to="PanBox/PanSlider" method="_on_mesh_instance_3d_set_pan_slider_bounds"]
 [connection signal="value_changed" from="Viewer1HBox/ZoomSlider" to="Viewer1HBox/ZoomSlider" method="_on_value_changed"]
-[connection signal="value_changed" from="Viewer1HBox/ZoomScroll" to="Viewer1HBox/ZoomScroll" method="_on_value_changed"]
-[connection signal="value_changed" from="PanSlider" to="PanSlider" method="_on_value_changed"]
-[connection signal="value_changed" from="PanScroll" to="PanScroll" method="_on_value_changed"]
+[connection signal="button_up" from="PanBox/PanStepLeft" to="PanBox/PanSlider" method="_on_pan_step_left_button_up"]
+[connection signal="button_up" from="PanBox/PanStepRight" to="PanBox/PanSlider" method="_on_pan_step_right_button_up"]
+[connection signal="value_changed" from="PanBox/PanSlider" to="PanBox/PanSlider" method="_on_value_changed"]

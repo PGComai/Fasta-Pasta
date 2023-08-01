@@ -2,7 +2,7 @@ extends HSlider
 
 var global: Node
 
-@onready var viewer_module = $".."
+@onready var viewer_module = $"../.."
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -30,3 +30,15 @@ func _on_mesh_instance_3d_set_pan_slider_bounds():
 	print('pan max value: ', str(max_value))
 	print('pan set value: ', str(max_value - global.substring_viewer_saved_parameters[viewer_module.substring_id]['X Adjustment']))
 	set_value_no_signal(max_value - global.substring_viewer_saved_parameters[viewer_module.substring_id]['X Adjustment'])
+
+
+func _on_pan_step_left_button_up():
+	if viewer_module.using:
+		global.substring_viewer_saved_parameters[viewer_module.substring_id]['X Adjustment'] += 0.001
+		set_value_no_signal(max_value - global.substring_viewer_saved_parameters[viewer_module.substring_id]['X Adjustment'])
+
+
+func _on_pan_step_right_button_up():
+	if viewer_module.using:
+		global.substring_viewer_saved_parameters[viewer_module.substring_id]['X Adjustment'] -= 0.001
+		set_value_no_signal(max_value - global.substring_viewer_saved_parameters[viewer_module.substring_id]['X Adjustment'])
