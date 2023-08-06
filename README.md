@@ -1,4 +1,5 @@
 # Fasta Pasta
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y0NJZLS)
 
 This is a graphical tool for analyzing short repeats in DNA sequences. It uses a compute shader running on the GPU to quickly look for matches across sequences up to 152 Mbases long.
 
@@ -45,6 +46,3 @@ This is a graphical tool for analyzing short repeats in DNA sequences. It uses a
 - Sequence caching to save load times
 - Cute loading animation and app icon
 - Adding color to lines
-
- 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y0NJZLS)
