@@ -49,12 +49,18 @@ var substring_param := {
 }
 
 var viewer_box := preload("res://scenes/viewer_box.tscn")
+var gc1 := GPUComputer.new()
+var gc2 := GPUComputer.new()
 
 @onready var loading = $HBoxContainer/FileVStack/Loading
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	global = get_node("/root/Global")
+	gc1.shader_file = load("res://fasta_comp_binary.glsl")
+	gc1._load_shader()
+	gc2.shader_file = load("res://line.glsl")
+	gc2._load_shader()
 	#chr_dict = global.substring_dict
 
 
@@ -285,12 +291,6 @@ func _single_binary_compute(id: String, workgroup_size: int, viewer_idx: int, ma
 	
 	var sample_array := PackedInt32Array(global.sample)
 	
-	# Load GLSL shader
-	var shader_file := load("res://fasta_comp_binary.glsl")
-	var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
-	var shader := rd.shader_create_from_spirv(shader_spirv)
-	
-	# Prepare our data. We use floats in the shader, so we need 32 bit.
 	var input_result := result_array
 	var input_result_bytes := input_result.to_byte_array()
 	var input_data := data_array
@@ -298,54 +298,24 @@ func _single_binary_compute(id: String, workgroup_size: int, viewer_idx: int, ma
 	var input_param := param_array
 	var input_param_bytes := input_param.to_byte_array()
 	var input_sample_bytes := sample_array.to_byte_array()
-
-	# Create a storage buffer that can hold our float values.
-	# Each float has 4 bytes (32 bit) so 10 x 4 = 40 bytes
-	var buffer_result := rd.storage_buffer_create(input_result_bytes.size(), input_result_bytes)
-	var buffer_data := rd.storage_buffer_create(input_data_bytes.size(), input_data_bytes)
-	var buffer_param := rd.storage_buffer_create(input_param_bytes.size(), input_param_bytes)
-	var buffer_sample := rd.storage_buffer_create(input_sample_bytes.size(), input_sample_bytes)
 	
-	# Create a uniform to assign the buffer to the rendering device
-	var uniform_result := RDUniform.new()
-	uniform_result.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_result.binding = 0 # this needs to match the "binding" in our shader file
-	uniform_result.add_id(buffer_result)
-	var uniform_data := RDUniform.new()
-	uniform_data.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_data.binding = 1 # this needs to match the "binding" in our shader file
-	uniform_data.add_id(buffer_data)
-	var uniform_param := RDUniform.new()
-	uniform_param.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_param.binding = 2 # this needs to match the "binding" in our shader file
-	uniform_param.add_id(buffer_param)
-	var uniform_sample := RDUniform.new()
-	uniform_sample.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_sample.binding = 3 # this needs to match the "binding" in our shader file
-	uniform_sample.add_id(buffer_sample)
+	gc1._add_buffer(0, 0, input_result_bytes)
+	gc1._add_buffer(0, 1, input_data_bytes)
+	gc1._add_buffer(0, 2, input_param_bytes)
+	gc1._add_buffer(0, 3, input_sample_bytes)
 	
-	var uniform_set := rd.uniform_set_create([uniform_result, uniform_data, uniform_param, uniform_sample], shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
+	gc1._make_pipeline(Vector3i(workgroup_size, workgroup_size, workgroup_size), true)
 	
-	# Create a compute pipeline
-	var pipeline := rd.compute_pipeline_create(shader)
-	var compute_list := rd.compute_list_begin()
-	rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
-	rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
-	rd.compute_list_dispatch(compute_list, workgroup_size, workgroup_size, workgroup_size)
-	rd.compute_list_end()
+	gc1._submit()
+	gc1._sync()
 	
-	# Submit to GPU and wait for sync
-	rd.submit()
-	rd.sync()
-	
-	# Read back the data from the buffer
-	var output_result_bytes := rd.buffer_get_data(buffer_result)
+	var output_result_bytes := gc1.output(0, 0)
 	var output_result := output_result_bytes.to_int32_array()
-	#print(output_result.slice(0, 100))
 	
-	rd.free_rid(buffer_result)
-	rd.free_rid(buffer_data)
-	rd.free_rid(buffer_param)
+	gc1._free_rid(0, 0)
+	gc1._free_rid(0, 1)
+	gc1._free_rid(0, 2)
+	gc1._free_rid(0, 3)
 	
 	global.match_dict[id] = Array(output_result).slice(0, length)
 	
@@ -372,10 +342,6 @@ func _compute_linemesh(chr: PackedInt32Array, len_arr: int, id: String, result_a
 	color_g_array.fill(255.0)
 	color_b_array.fill(255.0)
 	
-	var shader_file := load("res://line.glsl")
-	var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
-	var shader := rd.shader_create_from_spirv(shader_spirv)
-	
 	var input_value_bytes := value_array.to_byte_array()
 	var input_pos_x_bytes := pos_x_array.to_byte_array()
 	var input_pos_y_bytes := pos_y_array.to_byte_array()
@@ -384,70 +350,39 @@ func _compute_linemesh(chr: PackedInt32Array, len_arr: int, id: String, result_a
 	var input_color_g_bytes := color_r_array.to_byte_array()
 	var input_color_b_bytes := color_r_array.to_byte_array()
 	
-	var buffer_value := rd.storage_buffer_create(input_value_bytes.size(), input_value_bytes)
-	var buffer_pos_x := rd.storage_buffer_create(input_pos_x_bytes.size(), input_pos_x_bytes)
-	var buffer_pos_y := rd.storage_buffer_create(input_pos_y_bytes.size(), input_pos_y_bytes)
-	var buffer_pos_z := rd.storage_buffer_create(input_pos_z_bytes.size(), input_pos_z_bytes)
-	var buffer_color_r := rd.storage_buffer_create(input_color_r_bytes.size(), input_color_r_bytes)
-	var buffer_color_g := rd.storage_buffer_create(input_color_g_bytes.size(), input_color_g_bytes)
-	var buffer_color_b := rd.storage_buffer_create(input_color_b_bytes.size(), input_color_b_bytes)
+	gc2._add_buffer(0, 0, input_pos_x_bytes)
+	gc2._add_buffer(0, 1, input_pos_y_bytes)
+	gc2._add_buffer(0, 2, input_pos_z_bytes)
+	gc2._add_buffer(0, 3, input_value_bytes)
 	
-	var uniform_pos_x := RDUniform.new()
-	uniform_pos_x.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_pos_x.binding = 0 # this needs to match the "binding" in our shader file
-	uniform_pos_x.add_id(buffer_pos_x)
-	var uniform_pos_y := RDUniform.new()
-	uniform_pos_y.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_pos_y.binding = 1 # this needs to match the "binding" in our shader file
-	uniform_pos_y.add_id(buffer_pos_y)
-	var uniform_pos_z := RDUniform.new()
-	uniform_pos_z.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_pos_z.binding = 2 # this needs to match the "binding" in our shader file
-	uniform_pos_z.add_id(buffer_pos_z)
-	var uniform_value := RDUniform.new()
-	uniform_value.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_value.binding = 3 # this needs to match the "binding" in our shader file
-	uniform_value.add_id(buffer_value)
+	gc2._add_buffer(1, 0, input_color_r_bytes)
+	gc2._add_buffer(1, 1, input_color_g_bytes)
+	gc2._add_buffer(1, 2, input_color_b_bytes)
 	
-	var uniform_set := rd.uniform_set_create([uniform_pos_x, uniform_pos_y, uniform_pos_z, uniform_value], shader, 0)
+	gc2._make_pipeline(Vector3i(workgroup_size, workgroup_size, workgroup_size), true)
 	
-	var uniform_color_r := RDUniform.new()
-	uniform_color_r.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_color_r.binding = 0 # this needs to match the "binding" in our shader file
-	uniform_color_r.add_id(buffer_color_r)
-	var uniform_color_g := RDUniform.new()
-	uniform_color_g.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_color_g.binding = 1 # this needs to match the "binding" in our shader file
-	uniform_color_g.add_id(buffer_color_g)
-	var uniform_color_b := RDUniform.new()
-	uniform_color_b.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-	uniform_color_b.binding = 2 # this needs to match the "binding" in our shader file
-	uniform_color_b.add_id(buffer_color_b)
+	gc2._submit()
+	gc2._sync()
 	
-	var uniform_set_1 := rd.uniform_set_create([uniform_color_r, uniform_color_g, uniform_color_b], shader, 1)
+	var output_pos_x_bytes := gc2.output(0, 0)
+	var output_pos_y_bytes := gc2.output(0, 1)
+	var output_pos_z_bytes := gc2.output(0, 2)
 	
-	var pipeline := rd.compute_pipeline_create(shader)
-	var compute_list := rd.compute_list_begin()
-	rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
-	rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
-	rd.compute_list_bind_uniform_set(compute_list, uniform_set_1, 1)
-	rd.compute_list_dispatch(compute_list, workgroup_size, workgroup_size, workgroup_size)
-	rd.compute_list_end()
+	var output_color_r_bytes := gc2.output(1, 0)
+	var output_color_g_bytes := gc2.output(1, 1)
+	var output_color_b_bytes := gc2.output(1, 2)
 	
-	rd.submit()
-	rd.sync()
-	
-	var output_pos_x_bytes := rd.buffer_get_data(buffer_pos_x)
-	var output_pos_y_bytes := rd.buffer_get_data(buffer_pos_y)
-	var output_pos_z_bytes := rd.buffer_get_data(buffer_pos_z)
+	gc2._free_rid(0, 0)
+	gc2._free_rid(0, 1)
+	gc2._free_rid(0, 2)
+	gc2._free_rid(0, 3)
+	gc2._free_rid(1, 0)
+	gc2._free_rid(1, 1)
+	gc2._free_rid(1, 2)
 	
 	var output_pos_x := output_pos_x_bytes.to_float32_array()
 	var output_pos_y := output_pos_y_bytes.to_float32_array()
 	var output_pos_z := output_pos_z_bytes.to_float32_array()
-	
-	var output_color_r_bytes := rd.buffer_get_data(buffer_color_r)
-	var output_color_g_bytes := rd.buffer_get_data(buffer_color_g)
-	var output_color_b_bytes := rd.buffer_get_data(buffer_color_b)
 	
 	var output_color_r := output_color_r_bytes.to_float32_array()
 	var output_color_g := output_color_g_bytes.to_float32_array()
@@ -468,14 +403,6 @@ func _compute_linemesh(chr: PackedInt32Array, len_arr: int, id: String, result_a
 	else:
 		print('make map')
 		emit_signal('make_map', vec_array, color_array, len_arr, id, viewer_idx, map)
-	
-	rd.free_rid(buffer_value)
-	rd.free_rid(buffer_pos_x)
-	rd.free_rid(buffer_pos_y)
-	rd.free_rid(buffer_pos_z)
-	rd.free_rid(buffer_color_r)
-	rd.free_rid(buffer_color_g)
-	rd.free_rid(buffer_color_b)
 	
 	first_compute = true
 	
