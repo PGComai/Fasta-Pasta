@@ -187,7 +187,7 @@ theme_override_styles/separator = SubResource("StyleBoxEmpty_lipju")
 [connection signal="foward_line" from="." to="Viewer1HBox/SubViewportContainer/SubViewport/Node3D/MeshInstance3D" method="_on_viewer_module_foward_line"]
 [connection signal="toggled" from="TitleAndButton/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="gui_input" from="Viewer1HBox/SubViewportContainer" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_sub_viewport_container_gui_input"]
-[connection signal="size_changed" from="Viewer1HBox/SubViewportContainer/SubViewport" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_size_changed" flags=18]
+[connection signal="size_changed" from="Viewer1HBox/SubViewportContainer/SubViewport" to="Viewer1HBox/SubViewportContainer/SubViewport" method="_on_size_changed"]
 [connection signal="set_pan_slider_bounds" from="Viewer1HBox/SubViewportContainer/SubViewport/Node3D/MeshInstance3D" to="PanBox/PanSlider" method="_on_mesh_instance_3d_set_pan_slider_bounds"]
 [connection signal="value_changed" from="Viewer1HBox/ZoomSlider" to="Viewer1HBox/ZoomSlider" method="_on_value_changed"]
 [connection signal="button_up" from="PanBox/PanStepLeft" to="PanBox/PanSlider" method="_on_pan_step_left_button_up"]
